@@ -1,0 +1,32 @@
+[
+	{
+		"name": "EasyList",
+		"url": "https://easylist.to/easylist/easylist.txt",
+		"format": "adbp",
+		"moreinformation": "https://easylist.to/",
+		"description": "EasyList is the primary filter list that removes most adverts from international webpages, including unwanted frames, images and objects. It is the most popular list used by many ad blockers and forms the basis of over a dozen combination and supplementary filter lists."
+	},
+	{
+		"name": "EasyPrivacy",
+		"url": "https://easylist.to/easylist/easyprivacy.txt",
+		"format": "adbp",
+		"moreinformation": "https://easylist.to/",
+		"description": "EasyPrivacy is an optional supplementary filter list that completely removes all forms of tracking from the internet, including web bugs, tracking scripts and information collectors, thereby protecting your personal data."
+	},
+	{
+		"name": "AdGuard Simplified Domain Names Filter",
+		"url": "https://filters.adtidy.org/extension/chromium/filters/15.txt",
+		"format": "adbp",
+		"outputfile": "adguarddns.txt",
+		"moreinformation": "https://kb.adguard.com/en/general/adguard-ad-filters",
+		"description": "A filter composed from several other filters (English filter, Social media filter, Spyware filter, Mobile ads filter, EasyList and EasyPrivacy) and simplified specifically to be better compatible with DNS-level ad blocking. This filter is used by AdGuard DNS servers to block ads."
+	},
+	{
+		"name": "NoCoin Filter List",
+		"url": "https://raw.githubusercontent.com/hoshsadiq/adblock-nocoin-list/master/hosts.txt",
+		"format": "hosts",
+		"outputfile": "nocoin.txt",
+		"moreinformation": "https://github.com/hoshsadiq/adblock-nocoin-list/",
+		"description": "Blocking Web Browser Bitcoin Mining"
+	}
+]
