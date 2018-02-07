@@ -21,7 +21,7 @@ if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then
 	exit
 fi
 
-if [ -z $DEPLOY_BRANCH ]; then
+if [ -z "$DEPLOY_BRANCH" ]; then
 	echo "Skipping deployment; DEPLOY_BRANCH is not set."
 	exit
 fi
@@ -32,23 +32,23 @@ if [ "$TRAVIS_BRANCH" != "$DEPLOY_BRANCH" ]; then
 fi
 
 # Check if other required environment variables are set
-if [ -z $DEPLOY_BASE64_KEY_VAR ]; then
+if [ -z "$DEPLOY_BASE64_KEY_VAR" ]; then
 	echo "Skipping deployment; DEPLOY_BASE64_KEY_VAR is not set."
 	exit
 fi
-if [ -z $DEPLOY_REPO_SLUG ]; then
+if [ -z "$DEPLOY_REPO_SLUG" ]; then
 	echo "Skipping deployment; DEPLOY_REPO_SLUG is not set."
 	exit
 fi
-if [ -z $DEPLOY_TARGET_BRANCH ]; then
+if [ -z "$DEPLOY_TARGET_BRANCH" ]; then
 	echo "Skipping deployment; DEPLOY_TARGET_BRANCH is not set."
 	exit
 fi
-if [ -z $DEPLOY_GIT_NAME ]; then
+if [ -z "$DEPLOY_GIT_NAME" ]; then
 	echo "Skipping deployment; DEPLOY_GIT_NAME is not set."
 	exit
 fi
-if [ -z $DEPLOY_GIT_EMAIL ]; then
+if [ -z "$DEPLOY_GIT_EMAIL" ]; then
 	echo "Skipping deployment; DEPLOY_GIT_EMAIL is not set."
 	exit
 fi
@@ -66,15 +66,11 @@ if [ ! -d "$SOURCE_DIR" ]; then
 	exit
 fi
 
-# IMPORTANT: Turn off command traces while dealing with the private key
-set +x
-
-if [ -z ${!DEPLOY_BASE64_KEY_VAR} ]; then
-	echo "Missing key var."
-	exit
-fi
 
 echo "Set up SSH"
+
+# IMPORTANT: Turn off command traces while dealing with the private key
+set +x
 
 # Get the encrypted private key from the repo settings
 echo ${!DEPLOY_BASE64_KEY_VAR} | base64 --decode > ~/.ssh/id_rsa
@@ -97,7 +93,7 @@ git clone --branch ${DEPLOY_TARGET_BRANCH} ${SSH_REPO} ${TARGET_DIR}
 
 # Sync the output directory with the cloned repo branch
 echo "Sync $SOURCE_DIR with the cloned deployment branch"
-rsync -rt --delete --exclude=".git" $SOURCE_DIR/ $TARGET_DIR/
+rsync -rt --delete --exclude=".git" "$SOURCE_DIR/" "$TARGET_DIR/"
 
 # Build the commit message
 COMMIT_MESSAGE=""
@@ -113,7 +109,7 @@ else
 fi
 
 # Commit all changes to the deployment repo
-cd $TARGET_DIR
+cd "$TARGET_DIR"
 git config user.name "$DEPLOY_GIT_NAME"
 git config user.email "$DEPLOY_GIT_EMAIL"
 git add -A .
