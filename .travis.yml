@@ -15,15 +15,15 @@ env:
     - DEPLOY_GIT_EMAIL="justdomains-ci"
 
 script: 
-  - python ./convertlists.py lists.json $HOME/ci/converted/ -v
+  - python ./convertlists.py lists.json $HOME/ci/converted/ -vv
   - python ./buildrepo.py $HOME/ci/converted/ $HOME/ci/built/ --downloadbaseurl https://raw.githubusercontent.com/justdomains/blocklists/master/ -vv
 
-#deploy:
-#  - provider: script
-#    skip_cleanup: true # do not delete the built assets
-#    script: ci/deploy.sh $HOME/ci/built/
-#    on:
-#      branch: master
+deploy:
+  - provider: script
+    skip_cleanup: true # do not delete the built assets
+    script: ci/deploy.sh $HOME/ci/built/
+    on:
+      branch: master
 
 branches:
   only:
