@@ -58,10 +58,10 @@ def construct_readme_file(lists_info_array, downloadbaseurl: str, verbosity: int
 	lists_details.append("**Last Updated:** {}".format((str(datetime.now())).split('.')[0]))
 	lists_details.append("")
 	lists_details.append("- [Details](#details)")
-	lists_details.append("  - [Usage](#usage)")
-	lists_details.append("    - [Using with Pi-Hole](#using-with-pi-hole)")
-	lists_details.append("    - [Using with other tools](#using-with-other-tools)")
-	lists_details.append("  - [Reporting Conversion Issues](#reporting-conversion-issues)")
+	lists_details.append("- [Usage](#usage)")
+	lists_details.append("  - [Using with Pi-Hole](#using-with-pi-hole)")
+	lists_details.append("  - [Using with other tools](#using-with-other-tools)")
+	lists_details.append("- [Reporting Conversion Issues](#reporting-conversion-issues)")
 	lists_details.append("  - [Disclaimer](#disclaimer)")
 	lists_details.append("- [The Lists](#the-lists)")
 	for filterlist in lists_info_array:
@@ -75,59 +75,62 @@ def construct_readme_file(lists_info_array, downloadbaseurl: str, verbosity: int
 	lists_details.append("")
 	lists_details.append("The scripts output **only** the full-domain-blocking entries from the original lists, while attempting to filter any domains that conflict with an exception rule on the original list.")
 	lists_details.append("")
-	lists_details.append("## Usage:")
+	lists_details.append("## Note:")
+	lists_details.append("**Because these are automated, converted _subsets_ of the original lists, please do not report omissions from these converted files to the list originator.**")
+	lists_details.append("")
+	lists_details.append("# Usage:")
 	lists_details.append("These converted files can be used with various DNS and domain-blocking tools:")
 	lists_details.append("")
-	lists_details.append("### Using with [Pi-Hole](https://pi-hole.net/):")
+	lists_details.append("## Using with [Pi-Hole](https://pi-hole.net/):")
 	lists_details.append("1. Copy the link to the Pi-Hole format for the desired list (from the appropriate table below).")
 	lists_details.append("2. [Add the URL to your Pi-Hole's block lists (**Settings** > **Pi-Hole's Block Lists**).](https://github.com/pi-hole/pi-hole/wiki/Customising-Sources-for-Ad-Lists)")
 	lists_details.append("")
-	lists_details.append("### Using with other tools:")
+	lists_details.append("## Using with other tools:")
 	lists_details.append("The converted lists are provided in a \"Raw Domain List\" format that contains only domains, one per line. Many other tools / scripts can ingest this format to add them to your blocklist.")
 	lists_details.append("")
-	lists_details.append("> ## IMPORTANT:")
-	lists_details.append("> **Because these are automated, converted _subsets_ of the original lists, please do not report omissions from these converted files to the list originator.**")
-	lists_details.append("")
-	lists_details.append("## Reporting Conversion Issues:")
+	lists_details.append("# Reporting Conversion Issues:")
 	lists_details.append("If you find an issue in the output of the conversion process (i.e. comparing to the original upstream list), please report it over on: https://github.com/justdomains/ci/issues")
 	lists_details.append("")
-	lists_details.append("> #### **PLEASE NOTE:**")
+	lists_details.append("> ### **PLEASE NOTE:**")
 	lists_details.append("> **We do not manage the upstream lists themselves, and will not be able to add any new blocks to the lists.**")
 	lists_details.append("")
 	lists_details.append("### Disclaimer:")
-	lists_details.append("These files are provided \"AS IS\", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and noninfringement. In no event shall the authors or copyright holders be liable for any claim, damages or other liability, arising from, out of or in connection with the files or the use of the files.")
+	lists_details.append("<sub>These files are provided \"AS IS\", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and noninfringement. In no event shall the authors or copyright holders be liable for any claim, damages or other liability, arising from, out of or in connection with the files or the use of the files.</sub>")
 	lists_details.append("")
 	lists_details.append("# The Lists:")
 	lists_details.append("")
 	for filterlist in lists_info_array:
-		lists_details.append("### {} (Domains-only)".format(filterlist['Title']))
+		lists_details.append("## {} (Domains-only)".format(filterlist['Title']))
 		# Output Formats Table
 		lists_details.append("| Format | Raw Download Link |")
+		lists_details.append("| --- | --- |")
 		raw_download_link = construct_download_link(downloadbaseurl, os.path.join("lists/", filterlist['Output Formats']['Just Domains']))
 		lists_details.append("| Raw Domain List | [{}]({}) |".format(filterlist['Output Formats']['Just Domains'], raw_download_link))
 		lists_details.append("| Pi-Hole | [{}]({}) |".format(filterlist['Output Formats']['Just Domains'], raw_download_link))
+		lists_details.append("")
 		# Output Source List Information
-		lists_details.append("Source: [{}]({})".format(filterlist['Source'], filterlist['Source']))
+		lists_details.append("**Source:** [{}]({})".format(filterlist['Source'], filterlist['Source']))
 		header_output_list = ('Title', 'Version', 'Last Modified', 'Homepage')
 		for key in header_output_list:
 			if key in filterlist['Header']:
 				if should_linkify(filterlist['Header'][key]):
-					lists_details.append("   {}: [{}]({})".format(key, filterlist['Header'][key], filterlist['Header'][key]))
+					lists_details.append("- {}: [{}]({})".format(key, filterlist['Header'][key], filterlist['Header'][key]))
 				else:
-					lists_details.append("   {}: {}".format(key, filterlist['Header'][key]))
+					lists_details.append("- {}: {}".format(key, filterlist['Header'][key]))
+		lists_details.append("")
 		# Output Conversion Details
-		lists_details.append("Conversion Details:")
+		lists_details.append("**Conversion Details:**")
 		lists_details.append("```")
 		for conversion_output_tuple in filterlist['Conversion']:
 			if len(conversion_output_tuple) != 2:
 				if verbosity >= 1:
 					print("\tERROR: Failed to output Conversion tuple because it does not have 2 items: {!s}".format(conversion_output_tuple))
 				continue # Skip, currently unsupported
-			lists_details.append("   {}: {}".format(conversion_output_tuple[0], conversion_output_tuple[1]))
+			lists_details.append("{}: {}".format(conversion_output_tuple[0], conversion_output_tuple[1]))
 		lists_details.append("```")
 		lists_details.append("")
 
-	lists_details.append("<sup>Any and all trademarks are the property of their respective owners.</sup>")
+	lists_details.append("<sub>Any and all trademarks are the property of their respective owners.</sub>")
 	lists_details.append("")
 
 	return lists_details
