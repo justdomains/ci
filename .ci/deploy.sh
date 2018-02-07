@@ -69,6 +69,13 @@ fi
 # IMPORTANT: Turn off command traces while dealing with the private key
 set +x
 
+if [ -z ${!DEPLOY_BASE64_KEY_VAR} ]; then
+	echo "Missing key var."
+	exit
+fi
+
+echo "Set up SSH"
+
 # Get the encrypted private key from the repo settings
 echo ${!DEPLOY_BASE64_KEY_VAR} | base64 --decode > ~/.ssh/id_rsa
 chmod 600 ~/.ssh/id_rsa
@@ -81,11 +88,15 @@ echo "|1|qPmmP7LVZ7Qbpk7AylmkfR0FApQ=|WUy1WS3F4qcr3R5Sc728778goPw= ssh-rsa AAAAB
 
 
 # Create a temporary directory in which to clone the destination repo branch
+echo "Create temporary working directory"
 REPO_NAME=$(basename $SSH_REPO)
 TARGET_DIR=$(mktemp -d /tmp/$REPO_NAME.XXXX)
+
+echo "Clone remote deployment branch"
 git clone --branch ${DEPLOY_TARGET_BRANCH} ${SSH_REPO} ${TARGET_DIR}
 
 # Sync the output directory with the cloned repo branch
+echo "Sync $SOURCE_DIR with the cloned deployment branch"
 rsync -rt --delete --exclude=".git" $SOURCE_DIR/ $TARGET_DIR/
 
 # Build the commit message
@@ -106,7 +117,9 @@ cd $TARGET_DIR
 git config user.name "$DEPLOY_GIT_NAME"
 git config user.email "$DEPLOY_GIT_EMAIL"
 git add -A .
+echo "Commit changes with message: '$COMMIT_MESSAGE'"
 git commit --allow-empty -m "$COMMIT_MESSAGE"
+echo "git push"
 git push $SSH_REPO $DEPLOY_TARGET_BRANCH
 
 echo "Deploy finished."
