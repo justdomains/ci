@@ -18,6 +18,7 @@
 #
 # Optional dictionary keys/values for each list are:
 #    "license": used to supply a license URL or description, if no license information can be extracted from the list itself (string)
+#    "license-identifier": a short license name / title (ex. "GPL3", "MIT")
 #    "outputfile": the base filename used for both the downloaded original and the converted output file (string) - important if multiple downloaded lists have the same filename
 #
 # [Example Usage]:
@@ -575,6 +576,8 @@ with open(args.listsjson) as json_data:
         list_info['Source'] = filterlist['url']
         if 'license' in filterlist:
             list_info['License'] = filterlist['license']
+        if 'license-identifier' in filterlist:
+            list_info['License Identifier'] = filterlist['license-identifier']
         list_info['Base Output Filename'] = appendtofilename(basefilename, "-{FORMAT}")
         list_info['Header'] = listdetails['Header']
         list_info['Conversion'] = listdetails['Conversion']

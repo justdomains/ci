@@ -51,6 +51,17 @@ def construct_download_link(dl_base_url: str, path_in_repo: str) -> str:
 	else:
 		return "{}/{}".format(dl_base_url, path_in_repo) 
 
+# Extract the license description / URL from the list data, and return it + the source
+def get_license_info(filterlist):
+	if 'License' in filterlist['Header'] and len(filterlist['Header']['License']) > 0:
+		# Use the License information extracted from the list file itself
+		return (filterlist['Header']['License'], 'List Header')
+	elif 'License' in filterlist and len(filterlist['License']) > 0:
+		# Use the License information provided to convertlists.py (via lists.json)
+		return (filterlist['License'], 'Input')
+	else:
+		return ("", "No License Information")
+
 # Construct the README.md file
 def construct_readme_file(lists_info_array, downloadbaseurl: str, verbosity: int):
 	lists_details = list()
@@ -66,6 +77,7 @@ def construct_readme_file(lists_info_array, downloadbaseurl: str, verbosity: int
 		if verbosity >= 2:
 			print("\tAdding List: \"{!s}\"".format(filterlist['Title']))
 		lists_details.append("  - [{}](#{}) (Domains-only)".format(filterlist['Title'], construct_github_anchor_link(filterlist['Title'] + " (Domains-only)")))
+	lists_details.append("- [License](#license)")
 	lists_details.append("- [Reporting Conversion Issues](#reporting-conversion-issues)")
 	lists_details.append("")
 	lists_details.append("&nbsp;")
@@ -94,14 +106,29 @@ def construct_readme_file(lists_info_array, downloadbaseurl: str, verbosity: int
 	lists_details.append("")
 	lists_details.append("# The Lists:")
 	lists_details.append("")
-	lists_details.append("| Converted List | Domains | Raw Domain List Link | Last Updated |")
-	lists_details.append(":- | - | - | - |")
+	lists_details.append("| Converted List | Domains | Domain List Link | Last Updated | License |")
+	lists_details.append(":- | - | :-: | - | - |")
 	for filterlist in lists_info_array:
 		raw_download_link = construct_download_link(downloadbaseurl, os.path.join("lists/", filterlist['Output Formats']['Just Domains']))
 		last_updated = ""
 		if 'Last Modified' in filterlist['Header']:
 			last_updated = filterlist['Header']['Last Modified']
-		lists_details.append("| [{}](#{}) | {} | [{}]({}) | {} |".format(filterlist['Title'], construct_github_anchor_link(filterlist['Title'] + " (Domains-only)"), filterlist['Domains Output'], filterlist['Output Formats']['Just Domains'], raw_download_link, last_updated))
+
+		license_info, license_source = get_license_info(filterlist)
+		license_link = ""
+		if 'License Identifier' in filterlist:
+			if should_linkify(license_info):
+				license_link = "[{}]({})".format(filterlist['License Identifier'], license_info)
+			else:
+				license_link = filterlist['License Identifier']
+		elif len(license_info) > 0:
+			if should_linkify(license_info):
+				license_link = "[(link)]({})".format(license_info)
+			else:
+				license_link = license_info
+		else:
+			license_link = "(see source)"
+		lists_details.append("| [{}](#{}) | {} | [Download]({}) | {} | {} |".format(filterlist['Title'], construct_github_anchor_link(filterlist['Title'] + " (Domains-only)"), filterlist['Domains Output'], raw_download_link, last_updated, license_link))
 	lists_details.append("")
 	lists_details.append("&nbsp;")
 	lists_details.append("")
@@ -138,13 +165,17 @@ def construct_readme_file(lists_info_array, downloadbaseurl: str, verbosity: int
 		lists_details.append("&nbsp;")
 		lists_details.append("")
 
-
+	lists_details.append("# License:")
+	lists_details.append("Each converted / modified list file is licensed under the same license as the original list.")
+	lists_details.append("For more details, see the [LICENSE](LICENSE) file.")
+	lists_details.append("")
+	lists_details.append("&nbsp;")
+	lists_details.append("")
 	lists_details.append("# Reporting Conversion Issues:")
 	lists_details.append("If you find an issue in the output of the conversion process (i.e. comparing to the original upstream list), please report it over on: https://github.com/justdomains/ci/issues")
 	lists_details.append("")
 	lists_details.append("**NOTE: We do not manage the upstream lists themselves, and will not be able to add any new blocks to the lists.**")
 	lists_details.append("")
-	lists_details.append("##### Disclaimer:")
 	lists_details.append("<sup>These files are provided \"AS IS\", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and noninfringement. In no event shall the authors or copyright holders be liable for any claim, damages or other liability, arising from, out of or in connection with the files or the use of the files.</sup>")
 	lists_details.append("")
 	lists_details.append("<sub>Any and all trademarks are the property of their respective owners.</sub>")
@@ -152,24 +183,19 @@ def construct_readme_file(lists_info_array, downloadbaseurl: str, verbosity: int
 
 	return lists_details
 
+
 # Construct the LICENSE file
 def construct_license_file(lists_info_array, verbosity: int):
 	lists_licenses = list()
 	lists_licenses.append("All converted / modified list files are licensed under the same license as the original list.")
 	lists_licenses.append("")
 	for filterlist in lists_info_array:
-		if 'License' in filterlist['Header']:
-			# Use the License information extracted from the list file itself
+		license_info, license_source = get_license_info(filterlist)
+		if len(license_info) > 0:
 			lists_licenses.append("[{}]".format(filterlist['Base Output Filename']))
-			lists_licenses.append("\tLicense: {}".format(filterlist['Header']['License']))
+			lists_licenses.append("\tLicense: {}".format(license_info))
 			if verbosity >= 2:
-				print("\tAdding License for List \"{!s}\": \"{!s}\"; source='List Header'".format(filterlist['Title'], filterlist['Header']['License']))
-		elif 'License' in filterlist:
-			# Use the License information provided to convertlists.py (via lists.json)
-			lists_licenses.append("[{}]".format(filterlist['Base Output Filename']))
-			lists_licenses.append("\tLicense: {}".format(filterlist['License']))
-			if verbosity >= 2:
-				print("\tAdding License for List \"{!s}\": \"{!s}\"; source='Input'".format(filterlist['Title'], filterlist['License']))
+				print("\tAdding License for List \"{!s}\": \"{!s}\"; source='{!s}'".format(filterlist['Title'], license_info, license_source))
 		elif verbosity >= 1:
 			print("\tWARNING: No License Information Available for List: \"{!s}\"; skipping".format(filterlist['Title']))
 
