@@ -61,13 +61,12 @@ def construct_readme_file(lists_info_array, downloadbaseurl: str, verbosity: int
 	lists_details.append("- [Usage](#usage)")
 	lists_details.append("  - [Using with Pi-Hole](#using-with-pi-hole)")
 	lists_details.append("  - [Using with other tools](#using-with-other-tools)")
-	lists_details.append("- [Reporting Conversion Issues](#reporting-conversion-issues)")
-	lists_details.append("  - [Disclaimer](#disclaimer)")
 	lists_details.append("- [The Lists](#the-lists)")
 	for filterlist in lists_info_array:
 		if verbosity >= 2:
 			print("\tAdding List: \"{!s}\"".format(filterlist['Title']))
 		lists_details.append("  - [{}](#{}) (Domains-only)".format(filterlist['Title'], construct_github_anchor_link(filterlist['Title'] + " (Domains-only)")))
+	lists_details.append("- [Reporting Conversion Issues](#reporting-conversion-issues)")
 	lists_details.append("")
 	lists_details.append("&nbsp;")
 	lists_details.append("")
@@ -93,17 +92,16 @@ def construct_readme_file(lists_info_array, downloadbaseurl: str, verbosity: int
 	lists_details.append("")
 	lists_details.append("&nbsp;")
 	lists_details.append("")
-	lists_details.append("# Reporting Conversion Issues:")
-	lists_details.append("If you find an issue in the output of the conversion process (i.e. comparing to the original upstream list), please report it over on: https://github.com/justdomains/ci/issues")
-	lists_details.append("")
-	lists_details.append("> **NOTE: We do not manage the upstream lists themselves, and will not be able to add any new blocks to the lists.**")
-	lists_details.append("")
-	lists_details.append("> #### Disclaimer:")
-	lists_details.append("> <sub>These files are provided \"AS IS\", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and noninfringement. In no event shall the authors or copyright holders be liable for any claim, damages or other liability, arising from, out of or in connection with the files or the use of the files.</sub>")
-	lists_details.append("")
-	lists_details.append("&nbsp;")
-	lists_details.append("")
 	lists_details.append("# The Lists:")
+	lists_details.append("")
+	lists_details.append("| Converted List | Domains | Raw Domain List Link | Last Updated |")
+	lists_details.append(":- | - | - | - |")
+	for filterlist in lists_info_array:
+		raw_download_link = construct_download_link(downloadbaseurl, os.path.join("lists/", filterlist['Output Formats']['Just Domains']))
+		last_updated = ""
+		if 'Last Modified' in filterlist['Header']:
+			last_updated = filterlist['Header']['Last Modified']
+		lists_details.append("| [{}](#{}) | {} | [{}]({}) | {} |".format(filterlist['Title'], construct_github_anchor_link(filterlist['Title'] + " (Domains-only)"), filterlist['Domains Output'], filterlist['Output Formats']['Just Domains'], raw_download_link, last_updated))
 	lists_details.append("")
 	lists_details.append("&nbsp;")
 	lists_details.append("")
@@ -140,6 +138,15 @@ def construct_readme_file(lists_info_array, downloadbaseurl: str, verbosity: int
 		lists_details.append("&nbsp;")
 		lists_details.append("")
 
+
+	lists_details.append("# Reporting Conversion Issues:")
+	lists_details.append("If you find an issue in the output of the conversion process (i.e. comparing to the original upstream list), please report it over on: https://github.com/justdomains/ci/issues")
+	lists_details.append("")
+	lists_details.append("**NOTE: We do not manage the upstream lists themselves, and will not be able to add any new blocks to the lists.**")
+	lists_details.append("")
+	lists_details.append("##### Disclaimer:")
+	lists_details.append("<sup>These files are provided \"AS IS\", without warranty of any kind, express or implied, including but not limited to the warranties of merchantability, fitness for a particular purpose and noninfringement. In no event shall the authors or copyright holders be liable for any claim, damages or other liability, arising from, out of or in connection with the files or the use of the files.</sup>")
+	lists_details.append("")
 	lists_details.append("<sub>Any and all trademarks are the property of their respective owners.</sub>")
 	lists_details.append("")
 

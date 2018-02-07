@@ -281,7 +281,7 @@ def convertlist_adbp(inputfile, adbpconfiguration, outputfile):
         for line in processinginfo:
             print("\t{!s}: {!s}".format(line[0], line[1]))
 
-    return {"Header": headerinfo, "Conversion": processinginfo}
+    return {"Header": headerinfo, "Conversion": processinginfo, "Domains Output": domains_retained}
 
 
 def is_hostfile_ignored_host(host: str) -> bool:
@@ -430,7 +430,7 @@ def convertlist_hosts(inputfile, hostsconfiguration, outputfile):
         for line in processinginfo:
             print("\t{!s}: {!s}".format(line[0], line[1]))
 
-    return {"Header": headerinfo, "Conversion": processinginfo}
+    return {"Header": headerinfo, "Conversion": processinginfo, "Domains Output": hosts}
 
 # Convert an input list, given a specific input format (and format configuration) to a domains-only output file
 def convertlist(inputfile, form, formatconfiguration, outputfile):
@@ -579,6 +579,7 @@ with open(args.listsjson) as json_data:
         list_info['Header'] = listdetails['Header']
         list_info['Conversion'] = listdetails['Conversion']
         list_info['Output Formats'] = output_formats
+        list_info['Domains Output'] = listdetails['Domains Output']
 
         lists_details.append(list_info)
 
