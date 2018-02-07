@@ -31,6 +31,7 @@
 		"outputfile": "nocoin.txt",
 		"moreinformation": "https://github.com/hoshsadiq/adblock-nocoin-list/",
 		"description": "Blocking Web Browser Bitcoin Mining",
-		"license-identifier": "MIT"
+		"license-identifier": "MIT",
+		"license": "https://github.com/hoshsadiq/adblock-nocoin-list/blob/master/LICENSE"
 	}
 ]
