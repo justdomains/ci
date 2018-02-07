@@ -106,8 +106,8 @@ def construct_readme_file(lists_info_array, downloadbaseurl: str, verbosity: int
 	lists_details.append("")
 	lists_details.append("# The Lists:")
 	lists_details.append("")
-	lists_details.append("| Converted List | Domains | Domain List | Last Updated | License |")
-	lists_details.append(":- | - | :-: | - | - |")
+	lists_details.append("| Converted List | License | Domains | Domain List | Last Updated |")
+	lists_details.append(":- | - | - | :-: | - |")
 	for filterlist in lists_info_array:
 		raw_download_link = construct_download_link(downloadbaseurl, os.path.join("lists/", filterlist['Output Formats']['Just Domains']))
 		last_updated = ""
@@ -128,7 +128,7 @@ def construct_readme_file(lists_info_array, downloadbaseurl: str, verbosity: int
 				license_link = license_info
 		else:
 			license_link = "(see source)"
-		lists_details.append("| [{}](#{}) | {} | [**Download**]({}) | {} | {} |".format(filterlist['Title'], construct_github_anchor_link(filterlist['Title'] + " (Domains-only)"), filterlist['Domains Output'], raw_download_link, last_updated, license_link))
+		lists_details.append("| [{}](#{}) | {} | {} | [**Download**]({}) | {} |".format(filterlist['Title'], construct_github_anchor_link(filterlist['Title'] + " (Domains-only)"), license_link, filterlist['Domains Output'], raw_download_link, last_updated))
 	lists_details.append("")
 	lists_details.append("&nbsp;")
 	lists_details.append("")
@@ -168,7 +168,7 @@ def construct_readme_file(lists_info_array, downloadbaseurl: str, verbosity: int
 	lists_details.append("# License:")
 	lists_details.append("Each converted / modified list file is licensed under the same license as the original list.")
 	lists_details.append("")
-	lists_details.append("For more details, see the [LICENSE](LICENSE) file.")
+	lists_details.append("For more details, see the [LICENSES](LICENSES) file.")
 	lists_details.append("")
 	lists_details.append("&nbsp;")
 	lists_details.append("")
