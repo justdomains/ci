@@ -58,8 +58,8 @@ if [ -z "$1" ]; then
 fi
 
 # Configuration
-$SSH_REPO=git@github.com:${DEPLOY_REPO_SLUG}.git
-$SOURCE_DIR=$1
+SSH_REPO="git@github.com:${DEPLOY_REPO_SLUG}.git"
+SOURCE_DIR="$1"
 
 if [ ! -d "$SOURCE_DIR" ]; then
 	echo "Provided input parameter '$SOURCE_DIR' is not a valid directory."
