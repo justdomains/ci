@@ -77,7 +77,7 @@ echo ${!DEPLOY_BASE64_KEY_VAR} | base64 --decode > ~/.ssh/id_rsa
 chmod 600 ~/.ssh/id_rsa
 
 # IMPORTANT: Anyone can read the build log, so it MUST NOT contain any sensitive data
-set -x
+# set -x # For now, do not re-enable
 
 # Add GitHub's public key
 echo "|1|qPmmP7LVZ7Qbpk7AylmkfR0FApQ=|WUy1WS3F4qcr3R5Sc728778goPw= ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEAq2A7hRGmdnm9tUDbO9IDSwBK6TbQa+PXYPCPy6rbTrTtw7PHkccKrpp0yVhp5HdEIcKr6pLlVDBfOLX9QUsyCOV0wzfjIJNlGEYsdlLJizHhbn2mUjvSAHQqZETYP81eFzLQNnPHt4EVVUh7VfDESU84KezmD5QlWpXLmvU31/yMf+Se8xhHTvKSCZIFImWwoG6mbUoWf9nzpIoaSjB+weqqUUmpaaasXVal72J+UX2B+2RPW3RcT0eOzQgqlJL3RKrTJvdsjE3JEAvGq3lGHSZXy28G3skua2SmVi/w4yCE6gbODqnTWlg7+wC604ydGXA8VJiS5ap43JXiUFFAaQ==" >> ~/.ssh/known_hosts
@@ -88,7 +88,7 @@ echo "Create temporary working directory"
 REPO_NAME=$(basename $SSH_REPO)
 TARGET_DIR=$(mktemp -d /tmp/$REPO_NAME.XXXX)
 
-echo "Clone remote deployment branch"
+echo "git clone --branch ${DEPLOY_TARGET_BRANCH} ${SSH_REPO} ${TARGET_DIR}"
 git clone --branch ${DEPLOY_TARGET_BRANCH} ${SSH_REPO} ${TARGET_DIR}
 
 # Sync the output directory with the cloned repo branch
@@ -105,7 +105,11 @@ elif [ "$TRAVIS_EVENT_TYPE" == "api" ]; then
 	COMMIT_MESSAGE="Requested lists build: $DATE"
 else
 	REV=$(git rev-parse HEAD)
-	COMMIT_MESSAGE="Built lists from ci/ commit: $REV"
+	if [ -z "$TRAVIS_REPO_SLUG" ]; then
+		COMMIT_MESSAGE="Built lists from ci/ commit: $REV"
+	else
+		COMMIT_MESSAGE="Built lists from ci/ commit: $TRAVIS_REPO_SLUG@$REV"
+	fi
 fi
 
 # Commit all changes to the deployment repo
@@ -115,7 +119,7 @@ git config user.email "$DEPLOY_GIT_EMAIL"
 git add -A .
 echo "Commit changes with message: '$COMMIT_MESSAGE'"
 git commit --allow-empty -m "$COMMIT_MESSAGE"
-echo "git push"
+echo "git push $SSH_REPO $DEPLOY_TARGET_BRANCH"
 git push $SSH_REPO $DEPLOY_TARGET_BRANCH
 
 echo "Deploy finished."
