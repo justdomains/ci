@@ -6,8 +6,7 @@
 set -e # Exit with nonzero exit code if anything fails
 
 # Requires the following environment variables to be set:
-#   DEPLOY_BRANCH =""          # The only branch from which Travis should deploy
-#   DEPLOY_BASE64_KEY_VAR=""   # The Travis-CI environment variable name that contains the base64-encoded ssh deploy (private) key
+#   DEPLOY_BASE64_KEY_VAR=""   # The environment variable name that contains the base64-encoded ssh deploy (private) key
 #   DEPLOY_REPO_SLUG=""        # The GitHub repo slug (user/repo) for the target (deployment) repo
 #   DEPLOY_TARGET_BRANCH=""    # The target (deployment) repo branch
 #   DEPLOY_GIT_NAME=""         # The name to be used for Git deployment commits
@@ -15,21 +14,6 @@ set -e # Exit with nonzero exit code if anything fails
 
 # Requires the following script input parameters:
 #   $1 = the $SOURCE_DIR (i.e. the directory into which buildrepo.py output)
-
-if [ "$TRAVIS_PULL_REQUEST" != "false" ]; then
-	echo "Skipping deployment from pull request."
-	exit
-fi
-
-if [ -z "$DEPLOY_BRANCH" ]; then
-	echo "Skipping deployment; DEPLOY_BRANCH is not set."
-	exit
-fi
-
-if [ "$TRAVIS_BRANCH" != "$DEPLOY_BRANCH" ]; then
-	echo "Skipping deployment; TRAVIS_BRANCH ('$TRAVIS_BRANCH') does not match DEPLOY_BRANCH ('$DEPLOY_BRANCH')."
-	exit
-fi
 
 # Check if other required environment variables are set
 if [ -z "$DEPLOY_BASE64_KEY_VAR" ]; then
