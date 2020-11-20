@@ -32,7 +32,8 @@ jobs:
     if: github.event_name == 'schedule' || (github.event_name == 'push' && github.ref == 'refs/heads/master')
     env:
       DEPLOY_BRANCH: 'master'
-      DEPLOY_BASE64_KEY_VAR: '${{ secrets.DEPLOY_BASE64_KEY_VAR }}'
+      DEPLOY_SECRET_BASE64_KEY: '${{ secrets.DEPLOY_BASE64_KEY_VAR }}'
+      DEPLOY_BASE64_KEY_VAR: 'DEPLOY_SECRET_BASE64_KEY'
       DEPLOY_REPO_SLUG: 'justdomains/blocklists'
       DEPLOY_TARGET_BRANCH: 'master'
       DEPLOY_GIT_NAME: 'JustDomains CI'
