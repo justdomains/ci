@@ -31,7 +31,6 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'schedule' || (github.event_name == 'push' && github.ref == 'refs/heads/master')
     env:
-      DEPLOY_BRANCH: 'master'
       DEPLOY_SECRET_BASE64_KEY: '${{ secrets.DEPLOY_BASE64_KEY_VAR }}'
       DEPLOY_BASE64_KEY_VAR: 'DEPLOY_SECRET_BASE64_KEY'
       DEPLOY_REPO_SLUG: 'justdomains/blocklists'
