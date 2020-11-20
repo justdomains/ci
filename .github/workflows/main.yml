@@ -1,0 +1,37 @@
+name: CI
+
+# Controls when the action will run. 
+on:
+  push:
+    # Match all pushes
+  pull_request:
+    # Match all pull requests
+  schedule:
+    - cron: "5 11 * * *"
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.x' # Version range or exact version of a Python version to use, using SemVer's version range syntax
+      - name: 'Convert Lists'
+        run: python ./convertlists.py lists.json $HOME/ci/converted/ -vv
+      - name: 'Build Repo'
+        run: python ./buildrepo.py $HOME/ci/converted/ $HOME/ci/built/ --downloadbaseurl https://justdomains.github.io/blocklists/ -vv
+  deploy:
+    runs-on: ubuntu-latest
+    if: github.event_name == 'schedule' || (github.event_name == 'push' && github.ref == 'refs/heads/master')
+    env:
+      DEPLOY_BRANCH: 'master'
+      DEPLOY_BASE64_KEY_VAR: '${{ secrets.DEPLOY_BASE64_KEY_VAR }}'
+      DEPLOY_REPO_SLUG: 'justdomains/blocklists'
+      DEPLOY_TARGET_BRANCH: 'master'
+      DEPLOY_GIT_NAME: 'JustDomains CI'
+      DEPLOY_GIT_EMAIL: 'justdomains-ci'
+    steps:
+      - run: .ci/deploy.sh $HOME/ci/built/
